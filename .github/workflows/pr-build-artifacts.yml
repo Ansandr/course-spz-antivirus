@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-windows:
-    name: Build Windows Artifact
+    name: Build Windows Release Artifact
     runs-on: windows-latest
 
     steps:
@@ -22,7 +22,7 @@ jobs:
           version: '6.6.3'
           host: 'windows'
           target: 'desktop'
-          arch: 'win64_msvc2019_64'
+          arch: 'win64_msvc2022_64'
           cache: true
 
       - name: Configure CMake
@@ -36,11 +36,12 @@ jobs:
         shell: pwsh
         run: cmake --build build --config Release
 
-      - name: Collect artifacts
+      - name: Collect and deploy Release artifacts
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path artifact -Force | Out-Null
           Copy-Item build/Release/AntivirusMVP.exe artifact/ -Force
+          windeployqt --release artifact/AntivirusMVP.exe
           Copy-Item signatures.db artifact/ -Force
 
       - name: Upload build artifacts
