@@ -19,7 +19,7 @@ docs/
 # Debugger Files
 *.pdb
 
-# Compiled Dynamic libraries
+# Compiled Dynamic gitlibraries
 *.so
 *.dylib
 *.dll
