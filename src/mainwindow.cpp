@@ -24,6 +24,7 @@
 #include <QWidget>
 
 #include "logger.h"
+#include "processlist.h"
 #include "scanner.h"
 #include "signaturedb.h"
 
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent)
     resize(1000, 700);
 
     m_signatureDb = new SignatureDB();
+    m_processList = new ProcessList();
 
     buildUi();
 }
@@ -47,12 +49,13 @@ MainWindow::~MainWindow() {
         m_scanThread->wait(3000);
     }
     delete m_signatureDb;
+    delete m_processList;
 }
 
 void MainWindow::buildUi() {
     m_tabs = new QTabWidget(this);
     m_tabs->addTab(buildScanTab(), QStringLiteral("Сканування"));
-    m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Процеси")), QStringLiteral("Процеси"));
+    m_tabs->addTab(buildProcessTab(), QStringLiteral("Процеси"));
     m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Карантин")), QStringLiteral("Карантин"));
     m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Журнал")), QStringLiteral("Журнал"));
     m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Налаштування")), QStringLiteral("Налаштування"));
@@ -116,6 +119,29 @@ QWidget* MainWindow::buildScanTab() {
     m_scanTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     root->addWidget(m_scanTable);
 
+    return page;
+}
+
+QWidget* MainWindow::buildProcessTab() {
+    auto* page = new QWidget;
+    auto* root = new QVBoxLayout(page);
+
+    auto* btnRefresh = new QPushButton(QStringLiteral("Оновити список"));
+    connect(btnRefresh, &QPushButton::clicked, this, &MainWindow::refreshProcesses);
+    root->addWidget(btnRefresh);
+
+    m_processTable = new QTableWidget(0, 3);
+    m_processTable->setHorizontalHeaderLabels({
+        QStringLiteral("PID"),
+        QStringLiteral("Ім'я"),
+        QStringLiteral("Шлях")
+    });
+    m_processTable->horizontalHeader()->setStretchLastSection(true);
+    m_processTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_processTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    root->addWidget(m_processTable);
+
+    refreshProcesses();
     return page;
 }
 
@@ -299,4 +325,32 @@ void MainWindow::openReport() {
         return;
     }
     QDesktopServices::openUrl(QUrl::fromLocalFile(m_lastReportPath));
+}
+
+void MainWindow::refreshProcesses() {
+    if (!m_processList || !m_processTable) {
+        return;
+    }
+
+    const auto processes = m_processList->snapshot();
+    m_processTable->setRowCount(0);
+
+    for (const ProcessInfo& process : processes) {
+        const int row = m_processTable->rowCount();
+        m_processTable->insertRow(row);
+
+        auto* pidItem = new QTableWidgetItem(QString::number(process.pid));
+        auto* nameItem = new QTableWidgetItem(process.name);
+        auto* pathItem = new QTableWidgetItem(process.executablePath);
+
+        if (process.isSuspicious) {
+            pidItem->setForeground(Qt::red);
+            nameItem->setForeground(Qt::red);
+            pathItem->setForeground(Qt::red);
+        }
+
+        m_processTable->setItem(row, 0, pidItem);
+        m_processTable->setItem(row, 1, nameItem);
+        m_processTable->setItem(row, 2, pathItem);
+    }
 }
