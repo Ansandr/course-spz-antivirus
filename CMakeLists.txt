@@ -12,6 +12,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 add_library(antivirus_core STATIC
     src/logger.cpp
     src/logger.h
+    src/signaturedb.cpp
+    src/signaturedb.h
 )
 target_include_directories(antivirus_core PUBLIC src)
 target_link_libraries(antivirus_core PUBLIC Qt6::Core)
