@@ -69,3 +69,6 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# US-05 temporary EICAR file
+eicar_test.txt
