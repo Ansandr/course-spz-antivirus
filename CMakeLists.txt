@@ -9,7 +9,10 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 
 # ─── Core static library (antivirus_core) ────────────────────────────────────
-add_library(antivirus_core STATIC)
+add_library(antivirus_core STATIC
+    src/logger.cpp
+    src/logger.h
+)
 target_include_directories(antivirus_core PUBLIC src)
 target_link_libraries(antivirus_core PUBLIC Qt6::Core)
 
