@@ -1,0 +1,6 @@
+# Antivirus MVP — Signature Database
+# Format: MD5_HEX  ThreatName  (whitespace-separated, case-insensitive hash)
+# Version: 1.0 (2026-06-07)
+# Reference: https://www.eicar.org/download-anti-malware-testfile/
+
+44d88612fea8a8f36de82e1278abb02f  EICAR-Standard-Test-File
