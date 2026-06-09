@@ -1,8 +1,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QList>
 #include <QMainWindow>
 #include <QStringList>
+
+#include "reportwriter.h"
 
 class QTabWidget;
 class QLabel;
@@ -71,7 +74,7 @@ private:
     Quarantine* m_quarantine = nullptr;
 
     QString m_lastReportPath;
-    QStringList m_detectedRows;
+    QList<ThreatEntry> m_detectedThreats;
 };
 
 #endif // MAINWINDOW_H
