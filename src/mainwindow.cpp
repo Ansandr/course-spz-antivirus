@@ -27,6 +27,7 @@
 #include "logger.h"
 #include "processlist.h"
 #include "quarantine.h"
+#include "reportwriter.h"
 #include "scanner.h"
 #include "signaturedb.h"
 
@@ -234,7 +235,7 @@ void MainWindow::startScan() {
         return;
     }
 
-    m_detectedRows.clear();
+    m_detectedThreats.clear();
     m_lastReportPath.clear();
     m_scanTable->setRowCount(0);
     m_scanProgress->setValue(0);
@@ -290,7 +291,7 @@ void MainWindow::onScanProgress(int current, int total) {
 
 void MainWindow::onThreatFound(const QString& filePath,
                                const QString& threatName,
-                               const QString&) {
+                               const QString& md5Hex) {
     const int row = m_scanTable->rowCount();
     m_scanTable->insertRow(row);
 
@@ -306,7 +307,7 @@ void MainWindow::onThreatFound(const QString& filePath,
     m_scanTable->setItem(row, 1, statusItem);
     m_scanTable->setItem(row, 2, threatItem);
 
-    m_detectedRows << QStringLiteral("%1 | %2").arg(filePath, threatName);
+    m_detectedThreats.append({filePath, threatName, md5Hex});
 }
 
 bool MainWindow::writeScanReport(int totalFiles, int threatsFound) {
@@ -318,27 +319,16 @@ bool MainWindow::writeScanReport(int totalFiles, int threatsFound) {
         + QStringLiteral(".txt");
     m_lastReportPath = QDir(reportsDir).filePath(fileName);
 
-    QFile outFile(m_lastReportPath);
-    if (!outFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+    ScanResult result;
+    result.directory = m_scanDirEdit->text().trimmed();
+    result.totalFiles = totalFiles;
+    result.threatsFound = threatsFound;
+    result.threats = m_detectedThreats;
+
+    if (!ReportWriter::write(m_lastReportPath, result)) {
         m_lastReportPath.clear();
         return false;
     }
-
-    QTextStream out(&outFile);
-    out << "AntivirusMVP Scan Report\n";
-    out << "Time: " << QDateTime::currentDateTime().toString(Qt::ISODate) << "\n";
-    out << "Directory: " << m_scanDirEdit->text().trimmed() << "\n";
-    out << "Total files: " << totalFiles << "\n";
-    out << "Threats found: " << threatsFound << "\n\n";
-    out << "Threat list:\n";
-    if (m_detectedRows.isEmpty()) {
-        out << "(none)\n";
-    } else {
-        for (const QString& line : m_detectedRows) {
-            out << line << "\n";
-        }
-    }
-    out.flush();
     return true;
 }
 

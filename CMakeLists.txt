@@ -16,6 +16,8 @@ add_library(antivirus_core STATIC
     src/processlist.h
     src/quarantine.cpp
     src/quarantine.h
+    src/reportwriter.cpp
+    src/reportwriter.h
     src/scanner.cpp
     src/scanner.h
     src/signaturedb.cpp
