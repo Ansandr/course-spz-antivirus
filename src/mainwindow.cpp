@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QProcessEnvironment>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QStandardPaths>
@@ -25,6 +26,7 @@
 
 #include "logger.h"
 #include "processlist.h"
+#include "quarantine.h"
 #include "scanner.h"
 #include "signaturedb.h"
 
@@ -36,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_signatureDb = new SignatureDB();
     m_processList = new ProcessList();
+    m_quarantine = new Quarantine(QDir(appDataDir()).filePath(QStringLiteral("Quarantine")));
 
     buildUi();
 }
@@ -50,15 +53,22 @@ MainWindow::~MainWindow() {
     }
     delete m_signatureDb;
     delete m_processList;
+    delete m_quarantine;
 }
 
 void MainWindow::buildUi() {
     m_tabs = new QTabWidget(this);
     m_tabs->addTab(buildScanTab(), QStringLiteral("Сканування"));
     m_tabs->addTab(buildProcessTab(), QStringLiteral("Процеси"));
-    m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Карантин")), QStringLiteral("Карантин"));
+    m_tabs->addTab(buildQuarantineTab(), QStringLiteral("Карантин"));
     m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Журнал")), QStringLiteral("Журнал"));
     m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Налаштування")), QStringLiteral("Налаштування"));
+
+    connect(m_tabs, &QTabWidget::currentChanged, this, [this](int index) {
+        if (index == 2) {
+            refreshQuarantine();
+        }
+    });
 
     setCentralWidget(m_tabs);
 }
@@ -142,6 +152,36 @@ QWidget* MainWindow::buildProcessTab() {
     root->addWidget(m_processTable);
 
     refreshProcesses();
+    return page;
+}
+
+QWidget* MainWindow::buildQuarantineTab() {
+    auto* page = new QWidget;
+    auto* root = new QVBoxLayout(page);
+
+    m_quarantineTable = new QTableWidget(0, 4);
+    m_quarantineTable->setHorizontalHeaderLabels({
+        QStringLiteral("Файл"),
+        QStringLiteral("Загроза"),
+        QStringLiteral("Оригінальний шлях"),
+        QStringLiteral("Дата")
+    });
+    m_quarantineTable->horizontalHeader()->setStretchLastSection(true);
+    m_quarantineTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    m_quarantineTable->setSelectionBehavior(QAbstractItemView::SelectRows);
+    root->addWidget(m_quarantineTable);
+
+    auto* actions = new QHBoxLayout;
+    auto* btnRestore = new QPushButton(QStringLiteral("Відновити"));
+    auto* btnDelete = new QPushButton(QStringLiteral("Видалити назавжди"));
+    connect(btnRestore, &QPushButton::clicked, this, &MainWindow::quarantineRestore);
+    connect(btnDelete, &QPushButton::clicked, this, &MainWindow::quarantineDelete);
+    actions->addStretch();
+    actions->addWidget(btnRestore);
+    actions->addWidget(btnDelete);
+    root->addLayout(actions);
+
+    refreshQuarantine();
     return page;
 }
 
@@ -303,6 +343,11 @@ bool MainWindow::writeScanReport(int totalFiles, int threatsFound) {
 }
 
 QString MainWindow::appDataDir() const {
+    const QString appData =
+        QProcessEnvironment::systemEnvironment().value(QStringLiteral("APPDATA"));
+    if (!appData.isEmpty()) {
+        return QDir(appData).filePath(QStringLiteral("AntivirusMVP"));
+    }
     return QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 }
 
@@ -353,4 +398,62 @@ void MainWindow::refreshProcesses() {
         m_processTable->setItem(row, 1, nameItem);
         m_processTable->setItem(row, 2, pathItem);
     }
+}
+
+void MainWindow::refreshQuarantine() {
+    if (!m_quarantine || !m_quarantineTable) {
+        return;
+    }
+
+    const auto items = m_quarantine->entries();
+    m_quarantineTable->setRowCount(0);
+
+    for (const QuarantineEntry& entry : items) {
+        const int row = m_quarantineTable->rowCount();
+        m_quarantineTable->insertRow(row);
+        m_quarantineTable->setItem(row, 0, new QTableWidgetItem(entry.fileName));
+        m_quarantineTable->setItem(row, 1, new QTableWidgetItem(entry.threatName));
+        m_quarantineTable->setItem(row, 2, new QTableWidgetItem(entry.originalPath));
+        m_quarantineTable->setItem(row, 3, new QTableWidgetItem(entry.date));
+    }
+}
+
+void MainWindow::quarantineRestore() {
+    if (!m_quarantineTable || !m_quarantine) {
+        return;
+    }
+    const int row = m_quarantineTable->currentRow();
+    if (row < 0) {
+        QMessageBox::information(this, QStringLiteral("Карантин"), QStringLiteral("Оберіть запис для відновлення."));
+        return;
+    }
+
+    if (!m_quarantine->restore(row)) {
+        QMessageBox::warning(this, QStringLiteral("Карантин"), QStringLiteral("Не вдалося відновити файл."));
+    }
+    refreshQuarantine();
+}
+
+void MainWindow::quarantineDelete() {
+    if (!m_quarantineTable || !m_quarantine) {
+        return;
+    }
+    const int row = m_quarantineTable->currentRow();
+    if (row < 0) {
+        QMessageBox::information(this, QStringLiteral("Карантин"), QStringLiteral("Оберіть запис для видалення."));
+        return;
+    }
+
+    if (QMessageBox::question(this,
+                              QStringLiteral("Карантин"),
+                              QStringLiteral("Видалити файл назавжди?"),
+                              QMessageBox::Yes | QMessageBox::No)
+        != QMessageBox::Yes) {
+        return;
+    }
+
+    if (!m_quarantine->removeEntry(row)) {
+        QMessageBox::warning(this, QStringLiteral("Карантин"), QStringLiteral("Не вдалося видалити файл."));
+    }
+    refreshQuarantine();
 }
