@@ -12,6 +12,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 add_library(antivirus_core STATIC
     src/logger.cpp
     src/logger.h
+    src/processlist.cpp
+    src/processlist.h
     src/scanner.cpp
     src/scanner.h
     src/signaturedb.cpp

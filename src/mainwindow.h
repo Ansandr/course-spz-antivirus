@@ -15,6 +15,7 @@ class QWidget;
 
 class Scanner;
 class SignatureDB;
+class ProcessList;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -28,6 +29,7 @@ private slots:
     void startScan();
     void stopScan();
     void openReport();
+    void refreshProcesses();
 
     void onScanProgress(int current, int total);
     void onThreatFound(const QString& filePath,
@@ -38,6 +40,7 @@ private slots:
 private:
     void buildUi();
     QWidget* buildScanTab();
+    QWidget* buildProcessTab();
     QWidget* buildPlaceholderTab(const QString& title) const;
 
     bool loadSignatureDb();
@@ -53,10 +56,12 @@ private:
     QProgressBar* m_scanProgress = nullptr;
     QLabel*       m_scanProgressText = nullptr;
     QTableWidget* m_scanTable = nullptr;
+    QTableWidget* m_processTable = nullptr;
 
     QThread*   m_scanThread = nullptr;
     Scanner*   m_scanner = nullptr;
     SignatureDB* m_signatureDb = nullptr;
+    ProcessList* m_processList = nullptr;
 
     QString m_lastReportPath;
     QStringList m_detectedRows;
