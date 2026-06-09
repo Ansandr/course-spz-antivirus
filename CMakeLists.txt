@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Test)
+
+enable_testing()
 
 # ─── Core static library (antivirus_core) ────────────────────────────────────
 add_library(antivirus_core STATIC
@@ -43,3 +45,28 @@ target_link_libraries(AntivirusMVP PRIVATE
     Qt6::Gui
     Qt6::Widgets
 )
+
+function(add_antivirus_qt_test target_name source_file)
+    add_executable(${target_name}
+        ${source_file}
+    )
+    target_link_libraries(${target_name} PRIVATE
+        antivirus_core
+        Qt6::Core
+        Qt6::Test
+    )
+
+    if(WIN32)
+        # Ensure CTest can run each test binary without missing Qt runtime DLLs.
+        add_custom_command(TARGET ${target_name} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy -t $<TARGET_FILE_DIR:${target_name}> $<TARGET_RUNTIME_DLLS:${target_name}>
+            COMMAND_EXPAND_LISTS
+        )
+    endif()
+
+    add_test(NAME ${target_name} COMMAND ${target_name})
+endfunction()
+
+add_antivirus_qt_test(test_signaturedb tests/test_signaturedb.cpp)
+add_antivirus_qt_test(test_scanner tests/test_scanner.cpp)
+add_antivirus_qt_test(test_quarantine tests/test_quarantine.cpp)
