@@ -11,6 +11,7 @@ class QTabWidget;
 class QLabel;
 class QLineEdit;
 class QPushButton;
+class QPlainTextEdit;
 class QProgressBar;
 class QTableWidget;
 class QThread;
@@ -49,9 +50,14 @@ private:
     QWidget* buildScanTab();
     QWidget* buildProcessTab();
     QWidget* buildQuarantineTab();
+    QWidget* buildLogTab();
+    QWidget* buildSettingsTab();
     QWidget* buildPlaceholderTab(const QString& title) const;
 
     bool loadSignatureDb();
+    bool loadWhitelist();
+    bool saveWhitelist();
+    void refreshLogView();
     bool writeScanReport(int totalFiles, int threatsFound);
     QString appDataDir() const;
 
@@ -66,6 +72,8 @@ private:
     QTableWidget* m_scanTable = nullptr;
     QTableWidget* m_processTable = nullptr;
     QTableWidget* m_quarantineTable = nullptr;
+    QPlainTextEdit* m_logView = nullptr;
+    QPlainTextEdit* m_whitelistEdit = nullptr;
 
     QThread*   m_scanThread = nullptr;
     Scanner*   m_scanner = nullptr;
@@ -75,6 +83,7 @@ private:
 
     QString m_lastReportPath;
     QList<ThreatEntry> m_detectedThreats;
+    QStringList m_whitelist;
 };
 
 #endif // MAINWINDOW_H

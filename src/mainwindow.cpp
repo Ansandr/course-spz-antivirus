@@ -10,6 +10,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 #include <QProcessEnvironment>
 #include <QProgressBar>
 #include <QPushButton>
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_processList = new ProcessList();
     m_quarantine = new Quarantine(QDir(appDataDir()).filePath(QStringLiteral("Quarantine")));
 
+    loadWhitelist();
     buildUi();
 }
 
@@ -62,12 +64,14 @@ void MainWindow::buildUi() {
     m_tabs->addTab(buildScanTab(), QStringLiteral("Сканування"));
     m_tabs->addTab(buildProcessTab(), QStringLiteral("Процеси"));
     m_tabs->addTab(buildQuarantineTab(), QStringLiteral("Карантин"));
-    m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Журнал")), QStringLiteral("Журнал"));
-    m_tabs->addTab(buildPlaceholderTab(QStringLiteral("Налаштування")), QStringLiteral("Налаштування"));
+    m_tabs->addTab(buildLogTab(), QStringLiteral("Журнал"));
+    m_tabs->addTab(buildSettingsTab(), QStringLiteral("Налаштування"));
 
     connect(m_tabs, &QTabWidget::currentChanged, this, [this](int index) {
         if (index == 2) {
             refreshQuarantine();
+        } else if (index == 3) {
+            refreshLogView();
         }
     });
 
@@ -129,6 +133,44 @@ QWidget* MainWindow::buildScanTab() {
     m_scanTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
     m_scanTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     root->addWidget(m_scanTable);
+
+    return page;
+}
+
+QWidget* MainWindow::buildLogTab() {
+    auto* page = new QWidget;
+    auto* root = new QVBoxLayout(page);
+
+    auto* label = new QLabel(QStringLiteral("Вміст antivirus.log"));
+    root->addWidget(label);
+
+    m_logView = new QPlainTextEdit;
+    m_logView->setReadOnly(true);
+    m_logView->setPlaceholderText(QStringLiteral("Журнал ще не створено..."));
+    root->addWidget(m_logView, 1);
+
+    refreshLogView();
+    return page;
+}
+
+QWidget* MainWindow::buildSettingsTab() {
+    auto* page = new QWidget;
+    auto* root = new QVBoxLayout(page);
+
+    root->addWidget(new QLabel(QStringLiteral("Шляхи для виключення (один на рядок):")));
+    m_whitelistEdit = new QPlainTextEdit;
+    m_whitelistEdit->setPlainText(m_whitelist.join('\n'));
+    root->addWidget(m_whitelistEdit, 1);
+
+    auto* btnSave = new QPushButton(QStringLiteral("Зберегти"));
+    connect(btnSave, &QPushButton::clicked, this, [this]() {
+        if (saveWhitelist()) {
+            QMessageBox::information(this, QStringLiteral("Налаштування"), QStringLiteral("Whitelist збережено."));
+        } else {
+            QMessageBox::warning(this, QStringLiteral("Налаштування"), QStringLiteral("Не вдалося зберегти whitelist."));
+        }
+    });
+    root->addWidget(btnSave, 0, Qt::AlignRight);
 
     return page;
 }
@@ -196,6 +238,69 @@ void MainWindow::selectScanDirectory() {
     }
 }
 
+bool MainWindow::loadWhitelist() {
+    const QString whitelistPath = QDir(appDataDir()).filePath(QStringLiteral("whitelist.txt"));
+    QFile file(whitelistPath);
+    m_whitelist.clear();
+
+    if (!file.exists()) {
+        return true;
+    }
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return false;
+    }
+
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine().trimmed();
+        if (!line.isEmpty()) {
+            m_whitelist << line;
+        }
+    }
+    file.close();
+
+    if (m_whitelistEdit) {
+        m_whitelistEdit->setPlainText(m_whitelist.join('\n'));
+    }
+    return true;
+}
+
+bool MainWindow::saveWhitelist() {
+    const QString whitelistPath = QDir(appDataDir()).filePath(QStringLiteral("whitelist.txt"));
+    QDir().mkpath(appDataDir());
+
+    QFile file(whitelistPath);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+        return false;
+    }
+
+    QTextStream out(&file);
+    const QStringList items = m_whitelistEdit ? m_whitelistEdit->toPlainText().split('\n', Qt::SkipEmptyParts) : QStringList();
+    m_whitelist = items;
+    for (const QString& path : items) {
+        out << path.trimmed() << '\n';
+    }
+    file.close();
+    return true;
+}
+
+void MainWindow::refreshLogView() {
+    if (!m_logView) {
+        return;
+    }
+
+    const QString logPath = QDir(appDataDir()).filePath(QStringLiteral("antivirus.log"));
+    QFile file(logPath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        m_logView->setPlainText(QStringLiteral("Журнал ще не створено."));
+        return;
+    }
+
+    QTextStream in(&file);
+    m_logView->setPlainText(in.readAll());
+}
+
 bool MainWindow::loadSignatureDb() {
     if (m_signatureDb->count() > 0) {
         return true;
@@ -247,6 +352,7 @@ void MainWindow::startScan() {
     m_scanThread = new QThread(this);
     m_scanner = new Scanner();
     m_scanner->setDirectory(dir);
+    m_scanner->setWhitelist(m_whitelist);
     m_scanner->setSignatureDB(m_signatureDb);
     m_scanner->moveToThread(m_scanThread);
 
