@@ -414,6 +414,33 @@ void MainWindow::onThreatFound(const QString& filePath,
     m_scanTable->setItem(row, 2, threatItem);
 
     m_detectedThreats.append({filePath, threatName, md5Hex});
+
+    if (!m_quarantine) {
+        return;
+    }
+
+    const auto answer = QMessageBox::question(
+        this,
+        QStringLiteral("Загроза виявлена"),
+        QStringLiteral("Виявлено загрозу:\n%1\n\nФайл:\n%2\n\nІзолювати файл у карантин?")
+            .arg(threatName, filePath),
+        QMessageBox::Yes | QMessageBox::No,
+        QMessageBox::Yes);
+
+    if (answer != QMessageBox::Yes) {
+        return;
+    }
+
+    if (!m_quarantine->isolate(filePath, threatName)) {
+        QMessageBox::warning(this,
+                             QStringLiteral("Карантин"),
+                             QStringLiteral("Не вдалося ізолювати файл у карантин."));
+        Logger::instance()->warning(QStringLiteral("Failed to quarantine: ") + filePath);
+        return;
+    }
+
+    Logger::instance()->info(QStringLiteral("Quarantined: ") + filePath);
+    refreshQuarantine();
 }
 
 bool MainWindow::writeScanReport(int totalFiles, int threatsFound) {
