@@ -43,3 +43,34 @@ target_link_libraries(AntivirusMVP PRIVATE
     Qt6::Gui
     Qt6::Widgets
 )
+
+# Copy signatures.db next to the executable after each build.
+add_custom_command(TARGET AntivirusMVP POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/signatures.db"
+        "$<TARGET_FILE_DIR:AntivirusMVP>/signatures.db"
+    COMMENT "Copying signatures.db to output directory"
+)
+
+if(WIN32)
+    # Deploy Qt runtime DLLs into build/<Config>/ so the app can run directly
+    # after building both Debug and Release from VS Code / CMake Tools.
+    get_target_property(QT_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(QT_BIN_DIR "${QT_QMAKE_EXECUTABLE}" DIRECTORY)
+    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS "${QT_BIN_DIR}")
+
+    if(WINDEPLOYQT_EXECUTABLE)
+        add_custom_command(TARGET AntivirusMVP POST_BUILD
+            COMMAND "${WINDEPLOYQT_EXECUTABLE}"
+                "$<$<CONFIG:Debug>:--debug>$<$<NOT:$<CONFIG:Debug>>:--release>"
+                --no-translations
+                --no-opengl-sw
+                --dir "$<TARGET_FILE_DIR:AntivirusMVP>"
+                "$<TARGET_FILE:AntivirusMVP>"
+            COMMENT "Deploying Qt runtime with windeployqt"
+            VERBATIM
+        )
+    else()
+        message(WARNING "windeployqt was not found. AntivirusMVP may fail to run due to missing Qt DLLs.")
+    endif()
+endif()
