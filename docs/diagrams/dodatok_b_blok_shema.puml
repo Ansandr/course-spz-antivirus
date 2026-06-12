@@ -1,0 +1,59 @@
+@startuml
+' ===== ГОСТ-стиль: чорно-біла схема =====
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+skinparam ArrowColor black
+skinparam ActivityBorderColor black
+skinparam ActivityBackgroundColor white
+skinparam ActivityDiamondBorderColor black
+skinparam ActivityDiamondBackgroundColor white
+skinparam ActivityStartColor black
+skinparam ActivityEndColor black
+skinparam NoteBorderColor black
+skinparam NoteBackgroundColor white
+
+title Загальна блок-схема роботи антивірусної програми
+
+start
+:Запуск програми;
+:Ініціалізація модулів (UI, Logger, SignatureDB, Quarantine);
+if (Ініціалізація успішна?) then (ні)
+  :Показати повідомлення про помилку;
+  stop
+else (так)
+endif
+
+while (Програма запущена?) is (так)
+  :Очікування дії користувача в головному вікні;
+  if (Обрана дія) then (Сканування)
+    :Вибір режиму/шляху сканування;
+    :Запуск Scanner і відображення прогресу;
+    if (Виявлено загрози?) then (так)
+      :Додати записи до списку результатів;
+      :Запропонувати дію (карантин/ігнорувати);
+    else (ні)
+      :Показати статус "Загроз не виявлено";
+    endif
+    :Зберегти події у Logger;
+  elseif (Карантин)
+    :Показати вміст карантину;
+    :Обробити команду (відновити/видалити);
+    :Зафіксувати дію у Logger;
+  elseif (Звіт)
+    :Сформувати звіт (ReportWriter.write);
+    :Показати результат експорту;
+  elseif (Налаштування)
+    :Оновити параметри програми;
+    :Зберегти конфігурацію;
+  else (Вихід)
+    break
+  endif
+endwhile (ні)
+
+:Коректне завершення роботи модулів;
+stop
+
+@enduml

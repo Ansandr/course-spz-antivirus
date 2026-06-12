@@ -1,0 +1,47 @@
+@startuml
+' ===== ГОСТ-стиль: чорно-біла діаграма =====
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 14
+skinparam packageStyle rectangle
+skinparam ArrowColor black
+skinparam ActorBorderColor black
+skinparam ActorBackgroundColor white
+skinparam UsecaseBorderColor black
+skinparam UsecaseBackgroundColor white
+skinparam RectangleBorderColor black
+skinparam RectangleBackgroundColor white
+
+title Діаграма варіантів використання «Antivirus MVP»
+
+left to right direction
+actor "Користувач" as User
+rectangle "Антивірусний сканер «Antivirus MVP»" {
+  usecase "Обрати директорію для сканування" as UC1
+  usecase "Запустити / зупинити сканування" as UC2
+  usecase "Переглянути результати сканування" as UC3
+  usecase "Ізолювати загрозу до карантину" as UC4
+  usecase "Відновити файл з карантину" as UC5
+  usecase "Видалити файл з карантину" as UC6
+  usecase "Переглянути активні процеси" as UC7
+  usecase "Зберегти / відкрити звіт" as UC8
+  usecase "Налаштувати білий список" as UC9
+  usecase "Переглянути журнал подій" as UC10
+}
+User --> UC1
+User --> UC2
+User --> UC3
+User --> UC4
+User --> UC5
+User --> UC6
+User --> UC7
+User --> UC8
+User --> UC9
+User --> UC10
+UC2 ..> UC1 : <<include>>
+UC4 .> UC3 : <<extend>>
+UC8 ..> UC2 : <<include>>
+
+@enduml

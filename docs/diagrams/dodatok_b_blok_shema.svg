@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 900 1720" width="900" height="1720" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text { fill:#000; font-family:"Times New Roman","Liberation Serif",serif; font-size:14px; }
+    .box  { fill:#fff; stroke:#000; stroke-width:2; }
+    .term { fill:#fff; stroke:#000; stroke-width:2; }
+    .dec  { fill:#fff; stroke:#000; stroke-width:2; }
+    .flow { stroke:#000; stroke-width:2; fill:none; }
+    .br   { font-style:italic; font-size:13px; }
+    .title{ font-size:17px; font-weight:bold; }
+  </style>
+  <defs>
+    <marker id="ab" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#000"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="900" height="1720" fill="#fff"/>
+  <text class="title" x="450" y="28" text-anchor="middle">Загальна блок-схема роботи антивірусної програми</text>
+
+  <ellipse class="term" cx="450" cy="66" rx="56" ry="20"/>
+  <text x="450" y="71" text-anchor="middle">Початок</text>
+  <path class="flow" d="M450,86 L450,110" marker-end="url(#ab)"/>
+
+  <rect class="box" x="300" y="110" width="300" height="40"/>
+  <text x="450" y="135" text-anchor="middle">Запуск програми</text>
+  <path class="flow" d="M450,150 L450,170" marker-end="url(#ab)"/>
+
+  <rect class="box" x="235" y="170" width="430" height="54"/>
+  <text x="450" y="192" text-anchor="middle">Ініціалізація модулів</text>
+  <text x="450" y="212" text-anchor="middle">(UI, Logger, SignatureDB, Quarantine)</text>
+  <path class="flow" d="M450,224 L450,246" marker-end="url(#ab)"/>
+
+  <polygon class="dec" points="450,246 610,300 450,354 290,300"/>
+  <text x="450" y="305" text-anchor="middle">Ініціалізація успішна?</text>
+  <text class="br" x="620" y="295" text-anchor="start">ні</text>
+  <path class="flow" d="M610,300 L670,300" marker-end="url(#ab)"/>
+  <rect class="box" x="670" y="278" width="180" height="44"/>
+  <text x="760" y="305" text-anchor="middle">Показати помилку</text>
+  <path class="flow" d="M760,322 L760,350" marker-end="url(#ab)"/>
+  <ellipse class="term" cx="760" cy="372" rx="50" ry="20"/>
+  <text x="760" y="377" text-anchor="middle">Кінець</text>
+
+  <text class="br" x="462" y="374" text-anchor="start">так</text>
+  <path class="flow" d="M450,354 L450,376" marker-end="url(#ab)"/>
+
+  <polygon class="dec" points="450,376 610,430 450,484 290,430"/>
+  <text x="450" y="435" text-anchor="middle">Програма запущена?</text>
+  <text class="br" x="620" y="425" text-anchor="start">ні</text>
+  <path class="flow" d="M610,430 L790,430 L790,1562 L572,1562" marker-end="url(#ab)"/>
+
+  <text class="br" x="462" y="504" text-anchor="start">так</text>
+  <path class="flow" d="M450,484 L450,506" marker-end="url(#ab)"/>
+
+  <rect class="box" x="255" y="506" width="390" height="44"/>
+  <text x="450" y="533" text-anchor="middle">Очікування дії користувача в головному вікні</text>
+  <path class="flow" d="M450,550 L450,572" marker-end="url(#ab)"/>
+
+  <polygon class="dec" points="450,572 610,626 450,680 290,626"/>
+  <text x="450" y="631" text-anchor="middle">Дія = Сканування?</text>
+
+  <text class="br" x="462" y="700" text-anchor="start">так</text>
+  <path class="flow" d="M450,680 L450,702" marker-end="url(#ab)"/>
+  <rect class="box" x="285" y="702" width="330" height="44"/>
+  <text x="450" y="729" text-anchor="middle">Вибір режиму або шляху сканування</text>
+  <path class="flow" d="M450,746 L450,768" marker-end="url(#ab)"/>
+
+  <rect class="box" x="270" y="768" width="360" height="44"/>
+  <text x="450" y="795" text-anchor="middle">Запуск Scanner і відображення прогресу</text>
+  <path class="flow" d="M450,812 L450,834" marker-end="url(#ab)"/>
+
+  <polygon class="dec" points="450,834 610,888 450,942 290,888"/>
+  <text x="450" y="893" text-anchor="middle">Виявлено загрози?</text>
+
+  <text class="br" x="620" y="883" text-anchor="start">так</text>
+  <path class="flow" d="M610,888 L650,888" marker-end="url(#ab)"/>
+  <rect class="box" x="650" y="866" width="210" height="44"/>
+  <text x="755" y="893" text-anchor="middle">Додати записи до списку</text>
+  <path class="flow" d="M755,910 L755,932" marker-end="url(#ab)"/>
+  <rect class="box" x="640" y="932" width="230" height="44"/>
+  <text x="755" y="959" text-anchor="middle">Запропонувати карантин/ігнорувати</text>
+  <path class="flow" d="M755,976 L755,998 L600,998" marker-end="url(#ab)"/>
+
+  <text class="br" x="462" y="962" text-anchor="start">ні</text>
+  <path class="flow" d="M450,942 L450,964" marker-end="url(#ab)"/>
+  <rect class="box" x="280" y="964" width="340" height="44"/>
+  <text x="450" y="991" text-anchor="middle">Показати статус &quot;Загроз не виявлено&quot;</text>
+  <path class="flow" d="M450,1008 L450,1030" marker-end="url(#ab)"/>
+
+  <rect class="box" x="300" y="1030" width="300" height="44"/>
+  <text x="450" y="1057" text-anchor="middle">Зберегти події у Logger</text>
+  <path class="flow" d="M300,1052 L120,1052 L120,430 L288,430" marker-end="url(#ab)"/>
+  <text class="br" x="126" y="750" text-anchor="start">наступна дія</text>
+
+  <text class="br" x="260" y="621" text-anchor="end">ні</text>
+  <path class="flow" d="M290,626 L250,626 L250,1090 L450,1090" marker-end="url(#ab)"/>
+
+  <polygon class="dec" points="450,1090 610,1144 450,1198 290,1144"/>
+  <text x="450" y="1149" text-anchor="middle">Дія = Карантин?</text>
+  <text class="br" x="620" y="1139" text-anchor="start">так</text>
+  <path class="flow" d="M610,1144 L650,1144" marker-end="url(#ab)"/>
+  <rect class="box" x="650" y="1122" width="210" height="44"/>
+  <text x="755" y="1149" text-anchor="middle">Показати вміст карантину</text>
+  <path class="flow" d="M755,1166 L755,1188" marker-end="url(#ab)"/>
+  <rect class="box" x="650" y="1188" width="210" height="44"/>
+  <text x="755" y="1215" text-anchor="middle">Відновити або видалити</text>
+  <path class="flow" d="M755,1232 L755,1254" marker-end="url(#ab)"/>
+  <rect class="box" x="650" y="1254" width="210" height="44"/>
+  <text x="755" y="1281" text-anchor="middle">Зафіксувати дію у Logger</text>
+  <path class="flow" d="M650,1276 L120,1276 L120,430 L288,430" marker-end="url(#ab)"/>
+
+  <text class="br" x="462" y="1218" text-anchor="start">ні</text>
+  <path class="flow" d="M450,1198 L450,1220" marker-end="url(#ab)"/>
+
+  <polygon class="dec" points="450,1220 610,1274 450,1328 290,1274"/>
+  <text x="450" y="1279" text-anchor="middle">Дія = Звіт?</text>
+  <text class="br" x="280" y="1269" text-anchor="end">так</text>
+  <path class="flow" d="M290,1274 L250,1274" marker-end="url(#ab)"/>
+  <rect class="box" x="30" y="1252" width="220" height="44"/>
+  <text x="140" y="1279" text-anchor="middle">Сформувати звіт</text>
+  <path class="flow" d="M140,1296 L140,1318" marker-end="url(#ab)"/>
+  <rect class="box" x="30" y="1318" width="220" height="44"/>
+  <text x="140" y="1345" text-anchor="middle">Показати результат експорту</text>
+  <path class="flow" d="M30,1340 L20,1340 L20,430 L288,430" marker-end="url(#ab)"/>
+
+  <text class="br" x="462" y="1348" text-anchor="start">ні</text>
+  <path class="flow" d="M450,1328 L450,1350" marker-end="url(#ab)"/>
+
+  <polygon class="dec" points="450,1350 610,1404 450,1458 290,1404"/>
+  <text x="450" y="1409" text-anchor="middle">Дія = Налаштування?</text>
+  <text class="br" x="620" y="1399" text-anchor="start">так</text>
+  <path class="flow" d="M610,1404 L650,1404" marker-end="url(#ab)"/>
+  <rect class="box" x="650" y="1382" width="210" height="44"/>
+  <text x="755" y="1409" text-anchor="middle">Оновити параметри програми</text>
+  <path class="flow" d="M755,1426 L755,1448" marker-end="url(#ab)"/>
+  <rect class="box" x="650" y="1448" width="210" height="44"/>
+  <text x="755" y="1475" text-anchor="middle">Зберегти конфігурацію</text>
+  <path class="flow" d="M650,1470 L120,1470 L120,430 L288,430" marker-end="url(#ab)"/>
+
+  <text class="br" x="462" y="1478" text-anchor="start">ні (Вихід)</text>
+  <path class="flow" d="M450,1458 L450,1480" marker-end="url(#ab)"/>
+  <rect class="box" x="330" y="1480" width="240" height="44"/>
+  <text x="450" y="1507" text-anchor="middle">Вихід з програми (break)</text>
+  <path class="flow" d="M450,1524 L450,1546" marker-end="url(#ab)"/>
+
+  <rect class="box" x="290" y="1546" width="320" height="44"/>
+  <text x="450" y="1573" text-anchor="middle">Коректне завершення роботи модулів</text>
+  <path class="flow" d="M450,1590 L450,1612" marker-end="url(#ab)"/>
+
+  <ellipse class="term" cx="450" cy="1636" rx="56" ry="20"/>
+  <text x="450" y="1641" text-anchor="middle">Кінець</text>
+</svg>
