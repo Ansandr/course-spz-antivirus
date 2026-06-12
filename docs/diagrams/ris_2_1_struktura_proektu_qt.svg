@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 640" width="960" height="640" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text { fill: #000; font-family: "Times New Roman", "Liberation Serif", serif; }
+    .box { fill: #fff; stroke: #000; stroke-width: 2; }
+    .outer { fill: #fff; stroke: #000; stroke-width: 2.5; }
+    .lbl { font-size: 17px; }
+    .lbl-b { font-size: 17px; font-weight: bold; }
+    .sub { font-size: 14px; }
+    .edge { font-size: 13px; font-style: italic; }
+    .flow { stroke: #000; stroke-width: 2; fill: none; }
+    .title { font-size: 19px; font-weight: bold; }
+  </style>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3"
+            orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#000"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="960" height="640" fill="#fff"/>
+
+  <!-- Outer container: Проект -->
+  <rect class="outer" x="20" y="20" width="920" height="600"/>
+  <text class="title" x="480" y="52" text-anchor="middle">Проект AntivirusMVP (CMake)</text>
+
+  <!-- AntivirusMVP exe -->
+  <rect class="box" x="70" y="90" width="360" height="92"/>
+  <text class="lbl-b" x="250" y="120" text-anchor="middle">AntivirusMVP (.exe)</text>
+  <text class="sub"   x="250" y="143" text-anchor="middle">GUI-застосунок</text>
+  <text class="sub"   x="250" y="164" text-anchor="middle">main.cpp, MainWindow</text>
+
+  <!-- tests -->
+  <rect class="box" x="530" y="90" width="360" height="92"/>
+  <text class="lbl-b" x="710" y="120" text-anchor="middle">tests (Qt Test)</text>
+  <text class="sub"   x="710" y="146" text-anchor="middle">unit-тести ядра</text>
+
+  <!-- link arrows down to core -->
+  <path class="flow" d="M250,182 L250,250" marker-end="url(#arrow)"/>
+  <path class="flow" d="M710,182 L710,250" marker-end="url(#arrow)"/>
+
+  <!-- antivirus_core -->
+  <rect class="box" x="70" y="252" width="820" height="110"/>
+  <text class="lbl-b" x="480" y="282" text-anchor="middle">antivirus_core (статична бібліотека .lib / .a)</text>
+  <text class="lbl"   x="480" y="312" text-anchor="middle">Scanner · SignatureDB · Quarantine · ProcessList ·</text>
+  <text class="lbl"   x="480" y="338" text-anchor="middle">Logger · ReportWriter</text>
+
+  <!-- uses arrow -->
+  <path class="flow" d="M480,362 L480,440" marker-end="url(#arrow)"/>
+  <text class="edge" x="492" y="406" text-anchor="start">використовує</text>
+
+  <!-- platform layer -->
+  <rect class="box" x="70" y="442" width="820" height="92"/>
+  <text class="lbl-b" x="480" y="480" text-anchor="middle">Qt 6 (Core, Widgets)</text>
+  <text class="lbl"   x="480" y="506" text-anchor="middle">Windows API (tlhelp32.h)</text>
+</svg>

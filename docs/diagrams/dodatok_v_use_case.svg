@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 820 720" width="820" height="720" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text { fill:#000; font-family:"Times New Roman","Liberation Serif",serif; font-size:14px; }
+    .sys  { fill:#fff; stroke:#000; stroke-width:2; }
+    .uc   { fill:#fff; stroke:#000; stroke-width:1.5; }
+    .flow { stroke:#000; stroke-width:1.5; fill:none; }
+    .dash { stroke:#000; stroke-width:1.5; fill:none; stroke-dasharray:6 4; }
+    .br   { font-style:italic; font-size:12px; }
+    .title{ font-size:17px; font-weight:bold; }
+    .actor{ fill:none; stroke:#000; stroke-width:2; }
+  </style>
+  <defs>
+    <marker id="av" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#000"/>
+    </marker>
+    <marker id="avo" markerWidth="12" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L9,4 L0,8" fill="none" stroke="#000" stroke-width="1.5"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="820" height="720" fill="#fff"/>
+  <text class="title" x="410" y="28" text-anchor="middle">Діаграма варіантів використання «Antivirus MVP»</text>
+
+  <!-- Actor -->
+  <g class="actor">
+    <circle cx="60" cy="330" r="16"/>
+    <line x1="60" y1="346" x2="60" y2="392"/>
+    <line x1="34" y1="362" x2="86" y2="362"/>
+    <line x1="60" y1="392" x2="38" y2="424"/>
+    <line x1="60" y1="392" x2="82" y2="424"/>
+  </g>
+  <text x="60" y="446" text-anchor="middle">Користувач</text>
+
+  <!-- System boundary -->
+  <rect class="sys" x="270" y="60" width="520" height="620"/>
+  <text x="530" y="84" text-anchor="middle" font-weight="bold">Антивірусний сканер «Antivirus MVP»</text>
+
+  <!-- Use cases -->
+  <!-- UC1 -->
+  <ellipse class="uc" cx="430" cy="130" rx="120" ry="26"/>
+  <text x="430" y="135" text-anchor="middle">Обрати директорію</text>
+  <!-- UC2 -->
+  <ellipse class="uc" cx="430" cy="200" rx="120" ry="26"/>
+  <text x="430" y="205" text-anchor="middle">Запустити / зупинити скан.</text>
+  <!-- UC3 -->
+  <ellipse class="uc" cx="430" cy="270" rx="120" ry="26"/>
+  <text x="430" y="275" text-anchor="middle">Переглянути результати</text>
+  <!-- UC4 -->
+  <ellipse class="uc" cx="430" cy="340" rx="120" ry="26"/>
+  <text x="430" y="345" text-anchor="middle">Ізолювати до карантину</text>
+  <!-- UC5 -->
+  <ellipse class="uc" cx="430" cy="410" rx="120" ry="26"/>
+  <text x="430" y="415" text-anchor="middle">Відновити з карантину</text>
+  <!-- UC6 -->
+  <ellipse class="uc" cx="430" cy="480" rx="120" ry="26"/>
+  <text x="430" y="485" text-anchor="middle">Видалити з карантину</text>
+  <!-- UC7 -->
+  <ellipse class="uc" cx="660" cy="200" rx="115" ry="26"/>
+  <text x="660" y="205" text-anchor="middle">Переглянути процеси</text>
+  <!-- UC8 -->
+  <ellipse class="uc" cx="660" cy="270" rx="115" ry="26"/>
+  <text x="660" y="275" text-anchor="middle">Зберегти / відкрити звіт</text>
+  <!-- UC9 -->
+  <ellipse class="uc" cx="660" cy="340" rx="115" ry="26"/>
+  <text x="660" y="345" text-anchor="middle">Налаштувати білий список</text>
+  <!-- UC10 -->
+  <ellipse class="uc" cx="660" cy="410" rx="115" ry="26"/>
+  <text x="660" y="415" text-anchor="middle">Переглянути журнал</text>
+
+  <!-- Actor associations -->
+  <path class="flow" d="M88,360 C200,300 250,160 310,135"/>
+  <path class="flow" d="M88,362 C200,320 250,210 310,200"/>
+  <path class="flow" d="M90,366 C200,330 250,270 310,270"/>
+  <path class="flow" d="M90,372 C200,350 250,335 310,340"/>
+  <path class="flow" d="M88,392 C200,420 250,405 310,410"/>
+  <path class="flow" d="M86,400 C200,470 260,478 310,480"/>
+  <path class="flow" d="M88,356 C320,150 480,180 545,196"/>
+  <path class="flow" d="M90,364 C330,250 500,262 545,268"/>
+  <path class="flow" d="M90,378 C330,360 500,338 545,340"/>
+  <path class="flow" d="M88,396 C330,440 500,408 545,408"/>
+
+  <!-- include / extend relations -->
+  <!-- UC2 ..> UC1 include -->
+  <path class="dash" d="M430,174 L430,156" marker-end="url(#avo)"/>
+  <text class="br" x="438" y="168" text-anchor="start">&#171;include&#187;</text>
+  <!-- UC4 .> UC3 extend -->
+  <path class="dash" d="M430,314 L430,296" marker-end="url(#avo)"/>
+  <text class="br" x="438" y="308" text-anchor="start">&#171;extend&#187;</text>
+  <!-- UC8 ..> UC2 include -->
+  <path class="dash" d="M575,260 C520,235 500,215 548,205" marker-end="url(#avo)"/>
+  <text class="br" x="520" y="238" text-anchor="middle">&#171;include&#187;</text>
+</svg>

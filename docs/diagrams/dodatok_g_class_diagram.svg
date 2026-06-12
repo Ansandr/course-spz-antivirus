@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1580 1120" width="1580" height="1120" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    text { fill:#000; font-family:"Times New Roman","Liberation Serif",serif; font-size:13px; }
+    .cls   { fill:#fff; stroke:#000; stroke-width:1.8; }
+    .div   { stroke:#000; stroke-width:1.2; }
+    .name  { font-weight:bold; font-size:14px; }
+    .stereo{ font-style:italic; font-size:12px; }
+    .mem   { font-size:12.5px; }
+    .assoc { stroke:#000; stroke-width:1.6; fill:none; }
+    .dep   { stroke:#000; stroke-width:1.6; fill:none; stroke-dasharray:6 4; }
+    .rel   { font-style:italic; font-size:11.5px; }
+    .mult  { font-size:11.5px; }
+    .title { font-size:18px; font-weight:bold; }
+  </style>
+  <defs>
+    <marker id="open" markerWidth="14" markerHeight="14" refX="11" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M1,1 L11,5 L1,9" fill="none" stroke="#000" stroke-width="1.6"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1580" height="1120" fill="#fff"/>
+  <text class="title" x="790" y="30" text-anchor="middle">Діаграма класів антивірусного сканера «Antivirus MVP»</text>
+
+  <!-- ===================== MainWindow (top center) ===================== -->
+  <g>
+    <rect class="cls" x="610" y="60" width="360" height="266"/>
+    <text class="name" x="790" y="80" text-anchor="middle">MainWindow</text>
+    <line class="div" x1="610" y1="88" x2="970" y2="88"/>
+    <text class="mem" x="620" y="104">- m_tabs : QTabWidget*</text>
+    <text class="mem" x="620" y="120">- m_scanThread : QThread*</text>
+    <text class="mem" x="620" y="136">- m_scanner : Scanner*</text>
+    <text class="mem" x="620" y="152">- m_signatureDb : SignatureDB*</text>
+    <text class="mem" x="620" y="168">- m_processList : ProcessList*</text>
+    <text class="mem" x="620" y="184">- m_quarantine : Quarantine*</text>
+    <text class="mem" x="620" y="200">- m_whitelist : QStringList</text>
+    <line class="div" x1="610" y1="210" x2="970" y2="210"/>
+    <text class="mem" x="620" y="226">+ MainWindow(QWidget*)</text>
+    <text class="mem" x="620" y="242">- startScan() : void</text>
+    <text class="mem" x="620" y="258">- stopScan() : void</text>
+    <text class="mem" x="620" y="274">- refreshProcesses() : void</text>
+    <text class="mem" x="620" y="290">- refreshQuarantine() : void</text>
+    <text class="mem" x="620" y="306">- onThreatFound(QString,QString,QString)</text>
+    <text class="mem" x="620" y="322">- onScanFinished(int,int)</text>
+  </g>
+
+  <!-- ===================== Scanner ===================== -->
+  <g>
+    <rect class="cls" x="40" y="420" width="320" height="278"/>
+    <text class="name" x="200" y="440" text-anchor="middle">Scanner</text>
+    <line class="div" x1="40" y1="448" x2="360" y2="448"/>
+    <text class="mem" x="50" y="464">- m_directory : QString</text>
+    <text class="mem" x="50" y="480">- m_whitelist : QStringList</text>
+    <text class="mem" x="50" y="496">- m_db : SignatureDB*</text>
+    <text class="mem" x="50" y="512">- m_running : atomic&lt;bool&gt;</text>
+    <line class="div" x1="40" y1="522" x2="360" y2="522"/>
+    <text class="mem" x="50" y="538">+ setDirectory(QString) : void</text>
+    <text class="mem" x="50" y="554">+ setWhitelist(QStringList) : void</text>
+    <text class="mem" x="50" y="570">+ setSignatureDB(SignatureDB*) : void</text>
+    <text class="mem" x="50" y="586">+ stop() : void</text>
+    <text class="mem" x="50" y="602">+ run() : void  &lt;&lt;slot&gt;&gt;</text>
+    <text class="mem" x="50" y="618">- computeMd5(QString) : QString</text>
+    <line class="div" x1="40" y1="628" x2="360" y2="628"/>
+    <text class="stereo" x="50" y="644">signals:</text>
+    <text class="mem" x="50" y="660">+ progress(int,int)</text>
+    <text class="mem" x="50" y="676">+ threatFound(QString,QString,QString)</text>
+    <text class="mem" x="50" y="692">+ finished(int,int)</text>
+  </g>
+
+  <!-- ===================== SignatureDB ===================== -->
+  <g>
+    <rect class="cls" x="40" y="800" width="320" height="120"/>
+    <text class="name" x="200" y="820" text-anchor="middle">SignatureDB</text>
+    <line class="div" x1="40" y1="828" x2="360" y2="828"/>
+    <text class="mem" x="50" y="844">- m_signatures : QHash&lt;QString,QString&gt;</text>
+    <line class="div" x1="40" y1="854" x2="360" y2="854"/>
+    <text class="mem" x="50" y="870">+ load(QString) : bool</text>
+    <text class="mem" x="50" y="886">+ lookup(QString) : QString</text>
+    <text class="mem" x="50" y="902">+ count() : int</text>
+  </g>
+
+  <!-- ===================== ProcessList ===================== -->
+  <g>
+    <rect class="cls" x="430" y="420" width="300" height="92"/>
+    <text class="name" x="580" y="440" text-anchor="middle">ProcessList</text>
+    <line class="div" x1="430" y1="448" x2="730" y2="448"/>
+    <line class="div" x1="430" y1="458" x2="730" y2="458"/>
+    <text class="mem" x="440" y="476">+ snapshot() : QVector&lt;ProcessInfo&gt;</text>
+    <text class="mem" x="440" y="496">- isSuspiciousPath(QString) : bool</text>
+  </g>
+
+  <!-- ===================== ProcessInfo (struct) ===================== -->
+  <g>
+    <rect class="cls" x="430" y="620" width="300" height="130"/>
+    <text class="stereo" x="580" y="638" text-anchor="middle">&#171;struct&#187;</text>
+    <text class="name" x="580" y="654" text-anchor="middle">ProcessInfo</text>
+    <line class="div" x1="430" y1="662" x2="730" y2="662"/>
+    <text class="mem" x="440" y="678">+ pid : uint32_t</text>
+    <text class="mem" x="440" y="694">+ name : QString</text>
+    <text class="mem" x="440" y="710">+ executablePath : QString</text>
+    <text class="mem" x="440" y="726">+ isSuspicious : bool</text>
+  </g>
+
+  <!-- ===================== Quarantine ===================== -->
+  <g>
+    <rect class="cls" x="800" y="420" width="300" height="160"/>
+    <text class="name" x="950" y="440" text-anchor="middle">Quarantine</text>
+    <line class="div" x1="800" y1="448" x2="1100" y2="448"/>
+    <text class="mem" x="810" y="464">- m_dir : QString</text>
+    <text class="mem" x="810" y="480">- m_index : QJsonArray</text>
+    <line class="div" x1="800" y1="490" x2="1100" y2="490"/>
+    <text class="mem" x="810" y="506">+ Quarantine(QString)</text>
+    <text class="mem" x="810" y="522">+ isolate(QString,QString) : bool</text>
+    <text class="mem" x="810" y="538">+ restore(int) : bool</text>
+    <text class="mem" x="810" y="554">+ removeEntry(int) : bool</text>
+    <text class="mem" x="810" y="570">+ entries() : QVector&lt;QuarantineEntry&gt;</text>
+  </g>
+
+  <!-- ===================== QuarantineEntry (struct) ===================== -->
+  <g>
+    <rect class="cls" x="800" y="680" width="300" height="150"/>
+    <text class="stereo" x="950" y="698" text-anchor="middle">&#171;struct&#187;</text>
+    <text class="name" x="950" y="714" text-anchor="middle">QuarantineEntry</text>
+    <line class="div" x1="800" y1="722" x2="1100" y2="722"/>
+    <text class="mem" x="810" y="738">+ originalPath : QString</text>
+    <text class="mem" x="810" y="754">+ quarantinedPath : QString</text>
+    <text class="mem" x="810" y="770">+ threatName : QString</text>
+    <text class="mem" x="810" y="786">+ fileName : QString</text>
+    <text class="mem" x="810" y="802">+ date : QString</text>
+  </g>
+
+  <!-- ===================== ReportWriter ===================== -->
+  <g>
+    <rect class="cls" x="1180" y="420" width="320" height="80"/>
+    <text class="name" x="1340" y="440" text-anchor="middle">ReportWriter</text>
+    <line class="div" x1="1180" y1="448" x2="1500" y2="448"/>
+    <line class="div" x1="1180" y1="458" x2="1500" y2="458"/>
+    <text class="mem" x="1190" y="478">+ {static} write(QString, ScanResult) : bool</text>
+  </g>
+
+  <!-- ===================== ScanResult (struct) ===================== -->
+  <g>
+    <rect class="cls" x="1180" y="560" width="320" height="128"/>
+    <text class="stereo" x="1340" y="578" text-anchor="middle">&#171;struct&#187;</text>
+    <text class="name" x="1340" y="594" text-anchor="middle">ScanResult</text>
+    <line class="div" x1="1180" y1="602" x2="1500" y2="602"/>
+    <text class="mem" x="1190" y="618">+ directory : QString</text>
+    <text class="mem" x="1190" y="634">+ totalFiles : int</text>
+    <text class="mem" x="1190" y="650">+ threatsFound : int</text>
+    <text class="mem" x="1190" y="666">+ threats : QList&lt;ThreatEntry&gt;</text>
+  </g>
+
+  <!-- ===================== ThreatEntry (struct) ===================== -->
+  <g>
+    <rect class="cls" x="1180" y="760" width="320" height="120"/>
+    <text class="stereo" x="1340" y="778" text-anchor="middle">&#171;struct&#187;</text>
+    <text class="name" x="1340" y="794" text-anchor="middle">ThreatEntry</text>
+    <line class="div" x1="1180" y1="802" x2="1500" y2="802"/>
+    <text class="mem" x="1190" y="818">+ filePath : QString</text>
+    <text class="mem" x="1190" y="834">+ threatName : QString</text>
+    <text class="mem" x="1190" y="850">+ md5Hex : QString</text>
+  </g>
+
+  <!-- ===================== Logger (singleton) ===================== -->
+  <g>
+    <rect class="cls" x="430" y="880" width="320" height="190"/>
+    <text class="stereo" x="590" y="898" text-anchor="middle">&#171;singleton&#187;</text>
+    <text class="name" x="590" y="914" text-anchor="middle">Logger</text>
+    <line class="div" x1="430" y1="922" x2="750" y2="922"/>
+    <text class="mem" x="440" y="938">- m_logFile : QFile</text>
+    <text class="mem" x="440" y="954">- m_stream : QTextStream</text>
+    <text class="mem" x="440" y="970">- m_mutex : QMutex</text>
+    <line class="div" x1="430" y1="980" x2="750" y2="980"/>
+    <text class="mem" x="440" y="996">+ {static} instance() : Logger*</text>
+    <text class="mem" x="440" y="1012">+ open(QString) : bool</text>
+    <text class="mem" x="440" y="1028">+ info(QString) : void</text>
+    <text class="mem" x="440" y="1044">+ warning(QString) : void</text>
+    <text class="mem" x="440" y="1060">+ error(QString) : void</text>
+  </g>
+
+  <!-- ===================== Relationships ===================== -->
+  <!-- MainWindow to Scanner -->
+  <path class="assoc" d="M610,250 C420,300 260,360 200,418" marker-end="url(#open)"/>
+  <!-- MainWindow to ProcessList -->
+  <path class="assoc" d="M660,326 C620,360 590,388 580,418" marker-end="url(#open)"/>
+  <!-- MainWindow to Quarantine -->
+  <path class="assoc" d="M880,326 C915,360 940,388 950,418" marker-end="url(#open)"/>
+  <!-- MainWindow ..> ReportWriter -->
+  <path class="dep" d="M970,200 C1150,250 1300,330 1340,418" marker-end="url(#open)"/>
+  <text class="rel" x="1230" y="300" text-anchor="middle">&#171;use&#187;</text>
+  <!-- MainWindow ..> Logger -->
+  <path class="dep" d="M780,326 C700,520 640,720 600,878" marker-end="url(#open)"/>
+  <text class="rel" x="690" y="640" text-anchor="middle">&#171;use&#187;</text>
+  <!-- Scanner to SignatureDB -->
+  <path class="assoc" d="M200,698 L200,798" marker-end="url(#open)"/>
+  <text class="rel" x="212" y="752" text-anchor="start">lookup</text>
+  <!-- Scanner ..> Logger -->
+  <path class="dep" d="M360,640 C400,720 420,820 430,930" marker-end="url(#open)"/>
+  <text class="rel" x="408" y="800" text-anchor="middle">&#171;use&#187;</text>
+  <!-- ProcessList ..> ProcessInfo -->
+  <path class="dep" d="M580,512 L580,618" marker-end="url(#open)"/>
+  <text class="rel" x="592" y="568" text-anchor="start">створює</text>
+  <!-- Quarantine composes QuarantineEntry (filled diamond at Quarantine) -->
+  <path class="assoc" d="M950,592 L950,678"/>
+  <polygon points="950,580 958,592 950,604 942,592" fill="#000" stroke="#000"/>
+  <text class="mult" x="958" y="600" text-anchor="start">1</text>
+  <text class="mult" x="958" y="672" text-anchor="start">0..*</text>
+  <!-- ReportWriter ..> ScanResult -->
+  <path class="dep" d="M1340,500 L1340,558" marker-end="url(#open)"/>
+  <text class="rel" x="1352" y="534" text-anchor="start">приймає</text>
+  <!-- ScanResult composes ThreatEntry -->
+  <path class="assoc" d="M1340,700 L1340,758"/>
+  <polygon points="1340,688 1348,700 1340,712 1332,700" fill="#000" stroke="#000"/>
+  <text class="mult" x="1352" y="708" text-anchor="start">1</text>
+  <text class="mult" x="1352" y="752" text-anchor="start">0..*</text>
+</svg>

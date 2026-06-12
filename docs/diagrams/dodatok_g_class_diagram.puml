@@ -1,0 +1,127 @@
+@startuml
+' ===== ГОСТ-стиль: чорно-біла діаграма класів =====
+skinparam monochrome true
+skinparam shadowing false
+skinparam backgroundColor white
+skinparam defaultFontName "Times New Roman"
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+skinparam ArrowColor black
+skinparam ClassBorderColor black
+skinparam ClassBackgroundColor white
+
+title Діаграма класів антивірусного сканера «Antivirus MVP»
+
+class MainWindow {
+  - m_tabs : QTabWidget*
+  - m_scanThread : QThread*
+  - m_scanner : Scanner*
+  - m_signatureDb : SignatureDB*
+  - m_processList : ProcessList*
+  - m_quarantine : Quarantine*
+  - m_whitelist : QStringList
+  + MainWindow(QWidget*)
+  - startScan() : void
+  - stopScan() : void
+  - refreshProcesses() : void
+  - refreshQuarantine() : void
+  - onThreatFound(QString, QString, QString) : void
+  - onScanFinished(int, int) : void
+}
+
+class Scanner {
+  - m_directory : QString
+  - m_whitelist : QStringList
+  - m_db : SignatureDB*
+  - m_running : atomic<bool>
+  + setDirectory(QString) : void
+  + setWhitelist(QStringList) : void
+  + setSignatureDB(SignatureDB*) : void
+  + stop() : void
+  + run() : void <<slot>>
+  - computeMd5(QString) : QString
+  .. signals ..
+  + progress(int, int)
+  + threatFound(QString, QString, QString)
+  + finished(int, int)
+}
+
+class SignatureDB {
+  - m_signatures : QHash<QString,QString>
+  + load(QString) : bool
+  + lookup(QString) : QString
+  + count() : int
+}
+
+class Quarantine {
+  - m_dir : QString
+  - m_index : QJsonArray
+  + Quarantine(QString)
+  + isolate(QString, QString) : bool
+  + restore(int) : bool
+  + removeEntry(int) : bool
+  + entries() : QVector<QuarantineEntry>
+}
+
+class QuarantineEntry <<struct>> {
+  + originalPath : QString
+  + quarantinedPath : QString
+  + threatName : QString
+  + fileName : QString
+  + date : QString
+}
+
+class ProcessList {
+  + snapshot() : QVector<ProcessInfo>
+  - isSuspiciousPath(QString) : bool
+}
+
+class ProcessInfo <<struct>> {
+  + pid : uint32_t
+  + name : QString
+  + executablePath : QString
+  + isSuspicious : bool
+}
+
+class ReportWriter {
+  + {static} write(QString, ScanResult) : bool
+}
+
+class ScanResult <<struct>> {
+  + directory : QString
+  + totalFiles : int
+  + threatsFound : int
+  + threats : QList<ThreatEntry>
+}
+
+class ThreatEntry <<struct>> {
+  + filePath : QString
+  + threatName : QString
+  + md5Hex : QString
+}
+
+class Logger <<singleton>> {
+  - m_logFile : QFile
+  - m_stream : QTextStream
+  - m_mutex : QMutex
+  + {static} instance() : Logger*
+  + open(QString) : bool
+  + info(QString) : void
+  + warning(QString) : void
+  + error(QString) : void
+}
+
+MainWindow --> Scanner
+MainWindow --> SignatureDB
+MainWindow --> ProcessList
+MainWindow --> Quarantine
+MainWindow ..> ReportWriter : використовує
+MainWindow ..> Logger : використовує
+Scanner --> SignatureDB
+Scanner ..> Logger : використовує
+Quarantine "1" *-- "0..*" QuarantineEntry
+ProcessList ..> ProcessInfo : створює
+ReportWriter ..> ScanResult : приймає
+ScanResult "1" *-- "0..*" ThreatEntry
+
+@enduml

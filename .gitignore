@@ -1,8 +1,6 @@
 # Prerequisites
 *.d
 
-docs/
-
 # Compiled Object files
 *.slo
 *.lo
@@ -19,7 +17,7 @@ docs/
 # Debugger Files
 *.pdb
 
-# Compiled Dynamic libraries
+# Compiled Dynamic gitlibraries
 *.so
 *.dylib
 *.dll
@@ -69,3 +67,6 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# US-05 temporary EICAR file
+eicar_test.txt
